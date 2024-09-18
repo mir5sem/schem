@@ -1,3 +1,5 @@
+### constrs_4 4.cl
+
 ```tcl
 # Создаем сигнал тактовой частоты с именем 'clk' с периодом 3.000 нс и скважностью 50%
 create_clock -period 3.000 -waveform {0.000 1.500} [get_ports clk]
