@@ -69,7 +69,12 @@ generate
         
         wire [31:0] RES_ACC_result;
         wire [31:0] atan = rotation_sign ? atan_table[i] : -atan_table[i];
-        adder_tree RES_ACC_add (.clk(clk), .a(RES_ACC[i]), .b(atan[i]), .q(RES_ACC_result)); 
+        adder_tree RES_ACC_add ( // добавление сумматора
+            .clk(clk),
+            .a(RES_ACC[i]),
+            .b(atan[i]),
+            .q(RES_ACC_result)
+        );
         always@(posedge clk) RES_ACC[i+1] <= RES_ACC_result;
         
         wire [31:0] X_result;   
