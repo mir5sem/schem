@@ -52,7 +52,7 @@ generate
         wire signed [16:0] Y_shift = Y[i] >>> i;
         
         wire [31:0] atan = rotation_sign ? atan_table[i] : -atan_table[i]; // перевод в доп. код при дроблении на нескольких частей теряем знак
-  
+        /*
         always@(posedge clk)
         begin
             X[i+1] <= rotation_sign ? X[i] + Y_shift: X[i] - Y_shift;
@@ -66,6 +66,7 @@ generate
             // разбили 32 бита на 2 пары по 16 разрядов (2 части числа)
             RES_ACC[i+1] <= {RES_ACC[i][31:16] + atan[31:16] + RES_ACC_add[i][16], RES_ACC_add[i][15:0]};      
         end
+        */
         
         wire [31:0] RES_ACC_result;
         wire [31:0] atan = rotation_sign ? atan_table[i] : -atan_table[i];
@@ -76,15 +77,16 @@ generate
             .q(RES_ACC_result)
         );
         always@(posedge clk) RES_ACC[i+1] <= RES_ACC_result;
+        wire [16:0] X_result;   
+        wire [16:0] X_shift_ = rotation_sign ? -X_shift :  X_shift;
+        wire [16:0] Y_result;  
+        wire [16:0] Y_shift_ = rotation_sign ?  Y_shift : -Y_shift;  
         
-        wire [31:0] X_result;   
-        wire [16:0] X_shift_ = rotation_sign ? -X_shift :  X_shift;     
-        adder_tree X_add (.clk(clk), .a(X[i]), .b(X_shift_), .q(X_result));                                 
+        adder_tree #(16) X_add (.clk(clk), .a(X[i]), .b(X_shift_), .q(X_result));                                 
         always@(posedge clk) X[i+1] <= X_result;
         
-        wire [31:0] Y_result;  
-        wire [16:0] Y_shift_ = rotation_sign ?  Y_shift : -Y_shift;      
-        adder_tree Y_add (.clk(clk), .a(Y[i]), .b(Y_shift_), .q(Y_result));                                 
+    
+        adder_tree #(16) Y_add (.clk(clk), .a(Y[i]), .b(Y_shift_), .q(Y_result));                                 
         always@(posedge clk) Y[i+1] <= Y_result;
     end
 
