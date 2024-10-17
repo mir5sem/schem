@@ -1,68 +1,71 @@
 `timescale 1ns / 1ps
-module PWM_FSM #(UDW = 4) (
-    input CLK,
-    input RST,
-    input RE,
-    input CE,
-    input [UDW-1:0] PWM_IN,
-    output reg PWM_P,
-    output wire PWM_N
-);
-    
-reg [UDW-1:0] PWM_REG, FSM_STATE;
-assign PWM_N = ~PWM_P;
-always @ (posedge CLK, posedge RST)
-    if (RST)
-        //«действия по асинхронному сбросу»
-        begin
-            PWM_P <= 0;
-            FSM_STATE <= 0;
-            PWM_REG <= 0;
-        end
-    else if (RE)
-        //«действия по синхронному сбросу»
-        begin
-            FSM_STATE <= 0;
-            PWM_P <= 0;
-        end
-    else if (CE)
-        case(FSM_STATE)
-            0:
-                begin
-                    PWM_P <= 0;
-                    FSM_STATE <= {UDW{1'b1}}-1;
-                end
-                {UDW{1'b1}}-1:
-                begin
-                    if (PWM_REG > {UDW{1'b1}}-1)
-                        PWM_P <= 1;
-                    else
-                        PWM_P <= 0;
-                    FSM_STATE <= {UDW{1'b1}};
-                end
-                {UDW{1'b1}}:
-                begin
-                    if (PWM_REG == 0)
-                        PWM_P <= 0;
-                    else if (PWM_REG != 0)
-                        PWM_P <= 1;
-                    FSM_STATE <= 1;
-                end
-                default:
-                begin
-                    if (PWM_REG > FSM_STATE)
-                        PWM_P <= 1;
-                    else
-                        PWM_P <= 0;
-                        FSM_STATE <= FSM_STATE + 1;
-                end
-        endcase
 
-// Поведение входного регистра PWM_REG
-always @(posedge CLK, posedge RST)
-    if (RST)
-        PWM_REG <= 0;
-    else
-        if (FSM_STATE == {UDW{1'b1}}-1 & CE)
-            PWM_REG <= PWM_IN;
+module PWM_FSM #(UDW = 4) (
+    input CLK,              // Тактовый сигнал
+    input RST,              // Асинхронный сигнал сброса
+    input RE,               // Синхронный сигнал сброса
+    input CE,               // Сигнал разрешения (enable)
+    input [UDW-1:0] PWM_IN, // Входное значение ширины импульса
+    output reg PWM_P,       // Основной выходной сигнал ШИМ
+    output wire PWM_N       // Инверсный сигнал ШИМ
+);
+
+    reg [UDW-1:0] PWM_REG, FSM_STATE; // Регистры для хранения текущего значения импульса и состояния автомата
+    assign PWM_N = ~PWM_P;            // Инверсный выходной сигнал
+
+    // Процедура для управления состоянием автомата и выходным сигналом
+    always @ (posedge CLK, posedge RST) begin
+        if (RST) begin
+            // Действия при асинхронном сбросе
+            PWM_P <= 0;               // Сброс выходного сигнала
+            FSM_STATE <= 0;           // Сброс состояния автомата
+            PWM_REG <= 0;             // Сброс регистра значения импульса
+        end else if (RE) begin
+            // Действия при синхронном сбросе
+            FSM_STATE <= 0;           // Сброс состояния автомата
+            PWM_P <= 0;               // Сброс выходного сигнала
+        end else if (CE) begin
+            // Действия при активном сигнале разрешения (enable)
+            case(FSM_STATE)
+                0: begin
+                    // Начальное состояние
+                    PWM_P <= 0;       // Установка выходного сигнала в 0
+                    FSM_STATE <= {UDW{1'b1}}-1; // Переход в предпоследнее состояние
+                end
+                {UDW{1'b1}}-1: begin
+                    // Предпоследнее состояние
+                    if (PWM_REG > {UDW{1'b1}}-1) // Если значение ширины импульса больше максимального
+                        PWM_P <= 1;              // Установить выходной сигнал в 1
+                    else
+                        PWM_P <= 0;              // Иначе установить в 0
+                    FSM_STATE <= {UDW{1'b1}};    // Переход в максимальное состояние
+                end
+                {UDW{1'b1}}: begin
+                    // Максимальное состояние
+                    if (PWM_REG == 0)            // Если ширина импульса равна 0
+                        PWM_P <= 0;              // Установить выходной сигнал в 0
+                    else if (PWM_REG != 0)       // Если ширина импульса не равна 0
+                        PWM_P <= 1;              // Установить выходной сигнал в 1
+                    FSM_STATE <= 1;              // Переход в первое состояние
+                end
+                default: begin
+                    // Все остальные состояния
+                    if (PWM_REG > FSM_STATE)     // Сравнение значения ширины импульса с текущим состоянием
+                        PWM_P <= 1;              // Установить выходной сигнал в 1
+                    else
+                        PWM_P <= 0;              // Иначе установить в 0
+                    FSM_STATE <= FSM_STATE + 1;  // Переход в следующее состояние
+                end
+            endcase
+        end
+    end
+
+    // Поведение входного регистра PWM_REG
+    always @(posedge CLK, posedge RST) begin
+        if (RST)
+            PWM_REG <= 0; // Сброс регистра при асинхронном сбросе
+        else if (FSM_STATE == {UDW{1'b1}}-1 & CE)
+            PWM_REG <= PWM_IN; // Обновление регистра значением PWM_IN в конце периода
+    end
+
 endmodule
