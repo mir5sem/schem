@@ -14,7 +14,6 @@ reg [CMD_WIDTH-1 : 0] cmd [0 : 2**CMD_ADDR_WIDTH-1];
 initial
 begin
     //cmd[0] <= {7'b0001_010, 32'd0}; 
-    stage_counter = 0;
     $readmemb("mem.mem", cmd);
 end
 
@@ -163,7 +162,8 @@ begin
     else
         AdrA <= 0;    
 end
-
+  
+  
 always@(*)
 begin
     if (stage_counter == 0)
