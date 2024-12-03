@@ -9,4 +9,9 @@
 | [prak6](prak6/prak6.md)          | ✅     | ✅        |
 | [prak7](prak7/prak7.md)          | ✅     | доделать |
 | [prak8](prak8/prak8.md) (коллок) |       |          |
-| 9                                |       |          |
+
+| №                    | Отчёт | Защита |
+| -------------------- | ----- | ------ |
+| [lab1](lab1/lab1.md) | ✅     |        |
+| [lab2](lab2/lab2.md) |       |        |
+| [lab3](lab3/lab3.md) |       |        |
