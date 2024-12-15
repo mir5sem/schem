@@ -6,7 +6,6 @@ int main() {
     int dp[MAX_SIZE];
     int prev[MAX_SIZE];
 	int lis[MAX_SIZE];
-	int result[MAX_SIZE];
 	
     int input[] = {3, 10, 2, 11, 1, 20, 15, 30, 25, 28};
     
@@ -88,3 +87,8 @@ int main() {
     reverse_loop_end:
     
     output_loop_end: // 0051 HALT
+
+	for(int i = 0; i < lis_length; i = i + 1)
+		cout << result[i] << endl;
+	return 0;
+}

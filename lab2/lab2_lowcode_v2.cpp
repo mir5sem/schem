@@ -37,7 +37,7 @@ int main() {
 	R1 = memory[R1_ADDR]; // 0001 LOAD R1, R1_ADDR
 	R2 = memory[N_ADDR]; // 0002 LOAD R2, N_ADDR
 	if(R1 >= R2) // 0003 CMP R1, R2
-		goto init_loop_end; // 0004 JGE to 0007
+		goto init_loop_end; // 0004 JGE to 0011
 	R1 = R1 + dp_ADDR; // 0005 ADD_REG R1, dp_ADDR
 	R1 = memory[R1_ADDR]; // 0006 LOAD R1, R1_ADDR
 	R1 = R1 + prev_ADDR; // 0007 ADD_REG R1, prev_ADDR

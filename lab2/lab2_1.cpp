@@ -22,7 +22,7 @@ int lis(vector<int>& arr) {
 }
 
 int main() {
-    vector<int> arr = { 10, 22, 9, 33, 21, 50, 41, 60 };
+    vector<int> arr = {3, 10, 2, 11, 1, 20, 15, 30, 25, 28};
     cout << lis(arr);
     return 0;
 }
